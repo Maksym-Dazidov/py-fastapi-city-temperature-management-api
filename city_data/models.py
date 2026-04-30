@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import String, ForeignKey, DateTime, Float
+from sqlalchemy import String, ForeignKey, DateTime, Float, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
@@ -17,5 +17,5 @@ class Temperature(Base):
     __tablename__ = "temperature"
     id: Mapped[int] = mapped_column(primary_key=True)
     city_id: Mapped[int] = mapped_column(ForeignKey(City.id), nullable=False)
-    date_time: Mapped[datetime.datetime] = mapped_column(DateTime)
+    date_time: Mapped[datetime.datetime] = mapped_column(DateTime, onupdate=func.now(), nullable=False)
     temperature: Mapped[float] = mapped_column(Float)

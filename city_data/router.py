@@ -13,21 +13,22 @@ def get_cities(db: Session = Depends(get_db)):
     return crud.get_city_list(db=db)
 
 @router.post("/cities/")
-def create_city(city_data = schemas.CityCreate, db: Session = Depends(get_db)):
+def create_city(city_data: schemas.CityCreate, db: Session = Depends(get_db)):
     return crud.create_city(db=db, city_data=city_data)
 
-@router.post("/cities/{city_id}/")
+@router.delete("/cities/{city_id}/")
 def delete_city(city_id: int, db: Session = Depends(get_db)):
     return crud.delete_city(db=db, city_id=city_id)
 
-@router.post("/cities/{city_id}/temperature/")
+@router.post("/temperatures/update")
 async def create_temperature(city_id: int, db: Session = Depends(get_db)):
-    city = db.scalars(select(models.City).where(models.City.id == city_id)).first()
-    lat, lon = crud.geocode_city(city)
-    temperature = crud.fetch_temperature(lat, lon)
-    return crud.save_temperature(db=db, temperature_data=temperature, city_id=city_id)
+    cities = db.scalars(select(models.City)).all()
+    for city in cities:
+        lat, lon = crud.geocode_city(city)
+        temperature = crud.fetch_temperature(lat, lon)
+        crud.save_temperature(db=db, temperature_data=temperature, city_id=city_id)
 
-@router.get("/temperature/")
+@router.get("/temperatures/")
 def get_temperature(city_id, db: Session = Depends(get_db)):
     if city_id is None:
         return crud.get_temperature_list(db=db)

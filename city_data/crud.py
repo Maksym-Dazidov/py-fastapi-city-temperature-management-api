@@ -21,7 +21,7 @@ def create_city(db: Session, city_data: CityCreate):
 
 
 def delete_city(db: Session, city_id: int):
-    city = db.scalars(select(models.City).where(models.City.id == city_id))
+    city = db.scalars(select(models.City).where(models.City.id == city_id)).first()
     if not city:
         return None
     db.delete(city)
