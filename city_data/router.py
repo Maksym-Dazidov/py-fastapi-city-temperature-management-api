@@ -24,8 +24,8 @@ def delete_city(city_id: int, db: Session = Depends(get_db)):
 async def create_temperature(db: Session = Depends(get_db)):
     cities = db.scalars(select(models.City)).all()
     for city in cities:
-        lat, lon = crud.geocode_city(city)
-        temperature = crud.fetch_temperature(lat, lon)
+        lat, lon = await crud.geocode_city(city.name)
+        temperature = await crud.fetch_temperature(lat, lon)
         crud.save_temperature(db=db, temperature_data=temperature, city_id=city.id)
 
 @router.get("/temperatures/")

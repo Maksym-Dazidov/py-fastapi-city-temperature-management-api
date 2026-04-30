@@ -31,7 +31,7 @@ def delete_city(db: Session, city_id: int):
     return city
 
 
-async def geocode_city(city: schemas.City):
+async def geocode_city(city: str):
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1"
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
@@ -72,4 +72,4 @@ def get_temperature_list(db: Session):
 
 
 def get_temperature_for_city(db: Session, city_id: int):
-    return db.scalars(select(models.Temperature).where(models.Temperature.city_id == city_id))
+    return db.scalars(select(models.Temperature).where(models.Temperature.city_id == city_id)).all()
