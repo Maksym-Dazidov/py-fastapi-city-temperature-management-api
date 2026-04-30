@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 import httpx
@@ -57,6 +59,7 @@ def save_temperature(db: Session, city_id: int, temperature_data):
     temperature = models.Temperature(
         city_id=city_id,
         temperature=temperature_data,
+        date_time=datetime.datetime.now(),
     )
     db.add(temperature)
     db.commit()

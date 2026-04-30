@@ -14,9 +14,9 @@ class City(CityCreate):
 
 class TemperatureCreate(BaseModel):
     city_id: int
+    date_time: datetime.datetime
     temperature: float
 
 
 class Temperature(TemperatureCreate):
     id: int
-    date_time: datetime.datetime
