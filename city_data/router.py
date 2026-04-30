@@ -1,0 +1,34 @@
+from fastapi import APIRouter
+from fastapi.params import Depends
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from city_data import crud, schemas, models
+from dependencies import get_db
+
+router = APIRouter()
+
+@router.get("/cities/")
+def get_cities(db: Session = Depends(get_db)):
+    return crud.get_city_list(db=db)
+
+@router.post("/cities/")
+def create_city(city_data = schemas.CityCreate, db: Session = Depends(get_db)):
+    return crud.create_city(db=db, city_data=city_data)
+
+@router.post("/cities/{city_id}/")
+def delete_city(city_id: int, db: Session = Depends(get_db)):
+    return crud.delete_city(db=db, city_id=city_id)
+
+@router.post("/cities/{city_id}/temperature/")
+async def create_temperature(city_id: int, db: Session = Depends(get_db)):
+    city = db.scalars(select(models.City).where(models.City.id == city_id)).first()
+    lat, lon = crud.geocode_city(city)
+    temperature = crud.fetch_temperature(lat, lon)
+    return crud.save_temperature(db=db, temperature_data=temperature, city_id=city_id)
+
+@router.get("/temperature/")
+def get_temperature(city_id, db: Session = Depends(get_db)):
+    if city_id is None:
+        return crud.get_temperature_list(db=db)
+    return crud.get_temperature_for_city(db=db, city_id=city_id)
